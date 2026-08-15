@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, status, HTTPException
 from sqlalchemy import select, delete
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy.orm import joinedload
 
 from config import (
     get_jwt_auth_manager,
@@ -22,7 +22,6 @@ from database import (
     RefreshTokenModel
 )
 from exceptions import (
-    BaseSecurityError,
     TokenExpiredError,
     InvalidTokenError,
 )
@@ -337,7 +336,7 @@ async def login(
 
 
 @router.post(
-    "/api/v1/accounts/refresh/",
+    "/refresh/",
     response_model=TokenRefreshResponseSchema,
     status_code=status.HTTP_200_OK,
 )
@@ -371,7 +370,7 @@ async def refresh(
 
     if existing_token is None:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
+            status_code=status.HTTP_404_UNAUTHORIZED,
             detail="Refresh token not found.",
         )
 
