@@ -50,7 +50,7 @@ async def register(
         db: AsyncSession = Depends(get_db),
 ):
     try:
-        # 1. Проверяем существование пользователя
+
         existing_user = await db.scalar(
             select(UserModel).where(UserModel.email == user_data.email)
         )
@@ -61,14 +61,14 @@ async def register(
                 detail=f"A user with this email {user_data.email} already exists.",
             )
 
-        # 2. Получаем группу USER
+
         user_group = await db.scalar(
             select(UserGroupModel).where(
                 UserGroupModel.name == UserGroupEnum.USER
             )
         )
 
-        # 3. Создаем пользователя
+
         new_user = UserModel.create(
             email=user_data.email,
             raw_password=user_data.password,
@@ -76,13 +76,13 @@ async def register(
         )
 
         db.add(new_user)
-        await db.flush()  # получаем new_user.id без commit
+        await db.flush()
 
-        # 4. Создаем activation token
+
         activation_token = ActivationTokenModel(user_id=new_user.id)
         db.add(activation_token)
 
-        # 5. Сохраняем изменения
+
         await db.commit()
         await db.refresh(new_user)
 
