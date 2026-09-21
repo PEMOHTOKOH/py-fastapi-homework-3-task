@@ -61,13 +61,11 @@ async def register(
                 detail=f"A user with this email {user_data.email} already exists.",
             )
 
-
         user_group = await db.scalar(
             select(UserGroupModel).where(
                 UserGroupModel.name == UserGroupEnum.USER
             )
         )
-
 
         new_user = UserModel.create(
             email=user_data.email,
@@ -78,10 +76,8 @@ async def register(
         db.add(new_user)
         await db.flush()
 
-
         activation_token = ActivationTokenModel(user_id=new_user.id)
         db.add(activation_token)
-
 
         await db.commit()
         await db.refresh(new_user)
